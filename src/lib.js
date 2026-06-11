@@ -4,6 +4,16 @@ import isMobile from 'is-mobile';
 import BG_SVG from './bg.svg?raw';
 
 let initialized = false;
+const afterVisible = new Promise((resolve) => {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      resolve();
+    }
+  });
+  if (document.visibilityState === 'visible') {
+    resolve();
+  }
+});
 
 /**
  * A custom element to prevent inherited styles
@@ -17,11 +27,10 @@ class Unstyled extends HTMLElement {
  * @param {string} [id]
  * @param {string} [extraClass]
  */
-function img(svg, extraStyle, id, extraClass) {
-  id = id ? ` id="${id}"` : '';
-  extraClass = extraClass ? ` class="${extraClass}"` : '';
+function img(svg, extraAttrs) {
+  extraAttrs = extraAttrs ? ` ${extraAttrs}` : '';
   const bg = `center / contain no-repeat url('data:image/svg+xml;utf8,${encodeURIComponent(svg)}')`;
-  return `<r-cha${id}${extraClass} style="background:${bg}; ${extraStyle}"></r-cha>`;
+  return `<r-cha${extraAttrs}><r-cha style="background:${bg};"></r-cha></r-cha>`;
 }
 
 const DESKTOP = {
@@ -36,7 +45,7 @@ const DESKTOP = {
     const code = new QRCode(url);
     code.options.padding = 0;
     const svg = code.svg();
-    return `<r-cha id="rcha-qr-box">${img(svg, '', 'rcha-qr')}</r-cha>`;
+    return img(svg, 'id="rcha-qr"');
   },
 };
 
@@ -58,16 +67,16 @@ const MOBILE = {
 };
 
 // Button bar actions, from Material Symbols & Icons
-const BAR_ACTIONS = [
-  // Refresh
-  '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>',
-  // Headphones
-  '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M360-120H200q-33 0-56.5-23.5T120-200v-280q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480v280q0 33-23.5 56.5T760-120H600v-320h160v-40q0-117-81.5-198.5T480-760q-117 0-198.5 81.5T200-480v40h160v320Zm-80-240h-80v160h80v-160Zm400 0v160h80v-160h-80Zm-400 0h-80 80Zm400 0h80-80Z"/></svg>',
-  // Visibility
-  '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M607.5-372.5Q660-425 660-500t-52.5-127.5Q555-680 480-680t-127.5 52.5Q300-575 300-500t52.5 127.5Q405-320 480-320t127.5-52.5Zm-204-51Q372-455 372-500t31.5-76.5Q435-608 480-608t76.5 31.5Q588-545 588-500t-31.5 76.5Q525-392 480-392t-76.5-31.5ZM214-281.5Q94-363 40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200q-146 0-266-81.5ZM480-500Zm207.5 160.5Q782-399 832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280q113 0 207.5-59.5Z"/></svg>',
-  // Info
-  '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M440-280h80v-240h-80v240Zm68.5-331.5Q520-623 520-640t-11.5-28.5Q497-680 480-680t-28.5 11.5Q440-657 440-640t11.5 28.5Q463-600 480-600t28.5-11.5ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>',
-];
+const BAR_REFRESH =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>';
+const BAR_HEADPHONES =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M360-120H200q-33 0-56.5-23.5T120-200v-280q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480v280q0 33-23.5 56.5T760-120H600v-320h160v-40q0-117-81.5-198.5T480-760q-117 0-198.5 81.5T200-480v40h160v320Zm-80-240h-80v160h80v-160Zm400 0v160h80v-160h-80Zm-400 0h-80 80Zm400 0h80-80Z"/></svg>';
+const BAR_VISIBILITY =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M607.5-372.5Q660-425 660-500t-52.5-127.5Q555-680 480-680t-127.5 52.5Q300-575 300-500t52.5 127.5Q405-320 480-320t127.5-52.5Zm-204-51Q372-455 372-500t31.5-76.5Q435-608 480-608t76.5 31.5Q588-545 588-500t-31.5 76.5Q525-392 480-392t-76.5-31.5ZM214-281.5Q94-363 40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200q-146 0-266-81.5ZM480-500Zm207.5 160.5Q782-399 832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280q113 0 207.5-59.5Z"/></svg>';
+const BAR_INFO =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M440-280h80v-240h-80v240Zm68.5-331.5Q520-623 520-640t-11.5-28.5Q497-680 480-680t-28.5 11.5Q440-657 440-640t11.5 28.5Q463-600 480-600t28.5-11.5ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>';
+const BAR_CHECK =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="lime"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>';
 
 /**
  * Displays a UI similar to the (newer) reCAPTCHA with URL.
@@ -117,9 +126,9 @@ r-cha {
   align-items: center;
   margin: 1em 8px;
 }
-#rcha-hint-icon {
-  width: 4em;
-  height: 4em;
+#rcha-hint-icon > r-cha {
+  width: 2em;
+  height: 2em;
   margin: 1em;
 }
 #rcha-hint-text {
@@ -128,7 +137,7 @@ r-cha {
   margin-right: 2.5em;
 }
 
-#rcha-qr-box {
+#rcha-qr {
   background: #fff;
   border: 2px solid #000;
   border-radius: 4px;
@@ -137,9 +146,17 @@ r-cha {
   margin: 0 auto;
   box-shadow: 0 0 8px #0008;
 }
-#rcha-qr {
+#rcha-qr > r-cha {
   width: 12em;
   height: 12em;
+}
+
+#rcha-hint-hint {
+  font-size: .8em;
+  line-height: 3em;
+  text-align: center;
+  color: #666;
+  opacity: .01;
 }
 
 .rcha-button {
@@ -165,34 +182,62 @@ r-cha {
   flex-direction: row;
 }
 .rcha-bar .rcha-bar-item {
+  border-radius: 100em;
+  background-color: #fff;
+  transition: all .2s ease-in-out;
+  cursor: not-allowed;
+  opacity: .6;
+  margin: .2em;
+  padding: .2em;
+}
+.rcha-bar .rcha-bar-item > r-cha {
   width: 2em;
   height: 2em;
-  margin: .5em;
-  opacity: .6;
-  cursor: not-allowed;
+}
+.rcha-bar .rcha-bar-item:hover {
+  background-color: #ddd;
+}
+#rcha-check {
+  opacity: 0;
 }
 </style>
 
-<r-cha class="rickaptcha" aria-hidden="true">
+<r-cha class="rickaptcha">
   <r-cha id="rcha-header">${template.header}</r-cha>
   <r-cha id="rcha-hint">
-    ${img(template.hintIcon, '', 'rcha-hint-icon')}
+    ${img(template.hintIcon, 'id="rcha-hint-icon"')}
     <r-cha id="rcha-hint-text">${template.hint}</r-cha>
   </r-cha>
   <r-cha id="rcha-content">${template.generate(url)}</r-cha>
-  <r-cha style="height: 3em"></r-cha>
+  <r-cha id="rcha-hint-hint" role="status">
+    Refresh the form five times to pass this prank.
+  </r-cha>
   <r-cha class="rcha-bar">
-    ${img(BAR_ACTIONS[0], 'opacity: 1; cursor: pointer;', 'rcha-bar-refresh', 'rcha-bar-item')}
+    ${img(
+      BAR_REFRESH,
+      'style="opacity: 1; cursor: pointer;" id="rcha-bar-refresh" class="rcha-bar-item" role="button" title="Refresh the form"',
+    )}
     ${
-      BAR_ACTIONS.slice(1, 3).map((svg) => img(svg, 'cursor: not-allowed;', '', 'rcha-bar-item')).join('')
+      [BAR_HEADPHONES, BAR_VISIBILITY].map(
+        (svg) => img(svg, 'style="cursor: not-allowed;" class="rcha-bar-item" aria-hidden="true"'),
+      ).join('')
     }
-    ${img(BAR_ACTIONS[3], 'opacity: 1; cursor: pointer;', 'rcha-bar-info', 'rcha-bar-item')}
+    ${img(
+      BAR_INFO,
+      'style="opacity: 1; cursor: pointer;" id="rcha-bar-info" class="rcha-bar-item" role="button" title="Explanation"',
+    )}
+    <r-cha id="rcha-status" role="status"></r-cha>
   </r-cha>
 </r-cha>
   `;
 
   element.querySelector('#rcha-bar-info').addEventListener('click', () => {
     window.open('https://github.com/gudzpoz/rickaptcha', '_blank');
+  });
+  afterVisible.then(() => {
+    setTimeout(() => {
+      /** @type {HTMLElement!} */ (element.querySelector('#rcha-hint-hint')).style.opacity = 1;
+    }, 5000);
   });
 
   return new Promise((resolve) => {
@@ -206,6 +251,11 @@ r-cha {
       }, 500);
       if (refreshed === 5) {
         resolve(true);
+        element.querySelector('#rcha-status').innerHTML =
+          img(BAR_CHECK, 'style="cursor: pointer;" id="rcha-check" class="rcha-bar-item" title="Verified"');
+        setTimeout(() => {
+          /** @type {HTMLElement!} */ (element.querySelector('#rcha-check')).style.opacity = 1;
+        }, 1);
       }
     });
   });
