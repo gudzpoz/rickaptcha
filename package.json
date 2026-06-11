@@ -1,16 +1,27 @@
 {
   "name": "rickaptcha",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.0.1",
   "type": "module",
+  "main": "dist/rickaptcha.umd.cjs",
+  "module": "dist/rickaptcha.js",
+  "exports": {
+    ".": {
+      "import": "./dist/rickaptcha.js",
+      "require": "./dist/rickaptcha.umd.cjs"
+    }
+  },
+  "types": "dist/src/lib.d.ts",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "builddoc": "BUILD_DOC=true vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
     "@types/qrcode-svg": "^1.1.5",
-    "vite": "^8.0.12"
+    "unplugin-dts": "^1.0.2",
+    "vite": "^8.0.12",
+    "vite-plugin-singlefile": "^2.3.3"
   },
   "dependencies": {
     "is-mobile": "^5.0.0",
