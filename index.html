@@ -6,17 +6,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ricKaptcha</title>
     <style>
-      .rickaptcha { margin: auto; }
+      .demo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 4em;
+        flex-wrap: wrap;
+        margin: auto;
+      }
+      .footer {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        text-align: right;
+        border: 1px solid #ccc;
+        padding: .3em;
+        font-size: .7em;
+      }
     </style>
   </head>
   <body>
-    <div id="app"></div>
-    <main>
-      <h1>ricKaptcha</h1>
-      <p>
-        A reCAPTCHA-like UI for rickrolling.
-      </p>
-    </main>
+    <div class="demo">
+      <div id="left"></div>
+      <main>
+        <h1>ricKaptcha</h1>
+        <p>A reCAPTCHA-like UI for rickrolling.</p>
+        <p>
+          If you are unaware of <a href="https://en.wikipedia.org/wiki/ReCAPTCHA">reCAPTCHA</a>,
+          it's a service provided by Google basically for verifying users are not robots.
+        </p>
+        <p>
+          If you are unaware of recent changes to reCAPTCHA, see news coverage and various discussions:
+        </p>
+        <ul>
+          <li>
+            <a href="https://cybernews.com/privacy/google-qr-code-recaptcha-requires-approved-phone/">
+              Only approved phones can pass Google’s new reCAPTCHA, locking out privacy-focused alternatives
+            </a>
+            (<a href="https://lobste.rs/s/p07gv1/">Lobsters discussion</a>)
+          </li>
+          <li>
+            <a href="https://reclaimthenet.org/google-broke-recaptcha-for-de-googled-android-users">
+              Google Broke reCAPTCHA for De-Googled Android Users
+            </a>
+            (<a href="https://news.ycombinator.com/item?id=48067119">Hacker News discussion</a>)
+          </li>
+        </ul>
+      </main>
+      <div id="right"></div>
+    </div>
     <script type="module" src="/src/main.js"></script>
+    <div class="footer">
+      Made by Kana (human)
+    </div>
   </body>
 </html>

@@ -92,7 +92,8 @@ r-cha {
   display: block;
 }
 .rickaptcha {
-  width: 24em;
+  width: 100%;
+  max-width: 24em;
   border: 1px solid #ccc;
   background: center / contain no-repeat url('data:image/svg+xml;utf8,${encodeURIComponent(BG_SVG)}');
 }
@@ -106,7 +107,7 @@ r-cha {
   font-size: 1.2em;
   font-weight: bold;
   text-align: center;
-  line-height: 5em;
+  padding: 2em;
   margin: 8px;
 }
 
@@ -160,7 +161,6 @@ r-cha {
 
 .rcha-bar {
   border-top: 1px solid #ccc;
-  margin-top: 3em;
   display: flex;
   flex-direction: row;
 }
@@ -180,6 +180,7 @@ r-cha {
     <r-cha id="rcha-hint-text">${template.hint}</r-cha>
   </r-cha>
   <r-cha id="rcha-content">${template.generate(url)}</r-cha>
+  <r-cha style="height: 3em"></r-cha>
   <r-cha class="rcha-bar">
     ${img(BAR_ACTIONS[0], 'opacity: 1; cursor: pointer;', 'rcha-bar-refresh', 'rcha-bar-item')}
     ${
